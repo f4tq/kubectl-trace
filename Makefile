@@ -10,6 +10,10 @@ GIT_BRANCH_CLEAN := $(shell echo $(GIT_BRANCH) | sed -e "s/[^[:alnum:]]/-/g")
 
 IMAGE_NAME_INIT ?= quay.io/iovisor/kubectl-trace-init
 IMAGE_NAME ?= quay.io/iovisor/kubectl-trace-bpftrace
+ETHOS_IMAGE_NAME ?= docker.io/f4tq/kubectl-ethos
+
+ETHOS_TRACERUNNER_BRANCH := $(ETHOS_IMAGE_NAME):$(GIT_BRANCH_CLEAN)
+ETHOS_TRACERUNNER_COMMIT := $(ETHOS_IMAGE_NAME):$(GIT_COMMIT)
 
 IMAGE_TRACERUNNER_BRANCH := $(IMAGE_NAME):$(GIT_BRANCH_CLEAN)
 IMAGE_TRACERUNNER_COMMIT := $(IMAGE_NAME):$(GIT_COMMIT)
@@ -22,7 +26,8 @@ IMAGE_BUILD_FLAGS ?= "--no-cache"
 
 BPFTRACEVERSION ?= "v0.9.4"
 
-LDFLAGS := -ldflags '-X github.com/iovisor/kubectl-trace/pkg/version.buildTime=$(shell date +%s) -X github.com/iovisor/kubectl-trace/pkg/version.gitCommit=${GIT_COMMIT} -X github.com/iovisor/kubectl-trace/pkg/cmd.ImageNameTag=${IMAGE_TRACERUNNER_COMMIT} -X github.com/iovisor/kubectl-trace/pkg/cmd.InitImageNameTag=${IMAGE_INITCONTAINER_COMMIT}'
+LDFLAGS := -ldflags '-X github.com/iovisor/kubectl-trace/pkg/version.buildTime=$(shell date +%s) -X github.com/iovisor/kubectl-trace/pkg/version.gitCommit=${GIT_COMMIT} -X github.com/iovisor/kubectl-trace/pkg/cmd.ImageNameTag=${IMAGE_TRACERUNNER_COMMIT} -X github.com/iovisor/kubectl-trace/pkg/cmd.InitImageNameTag=${IMAGE_INITCONTAINER_COMMIT} -X github.com/iovisor/kubectl-trace/pkg/ethos.ImageNameTag=${ETHOS_TRACERUNNER_COMMIT} -X github.com/iovisor/kubectl-trace/pkg/ethos.InitImageNameTag=${ETHOS_INITCONTAINER_COMMIT}'
+
 TESTPACKAGES := $(shell go list ./... | grep -v github.com/iovisor/kubectl-trace/integration)
 
 kubectl_trace ?= _output/bin/kubectl-trace
@@ -72,6 +77,21 @@ image/build:
 	$(DOCKER) tag $(IMAGE_TRACERUNNER_BRANCH) $(IMAGE_TRACERUNNER_COMMIT)
 	$(DOCKER) tag "$(IMAGE_TRACERUNNER_BRANCH)" $(IMAGE_TRACERUNNER_BRANCH)
 
+.PHONY: image/ethos
+image/ethos: 
+	$(DOCKER) build \
+		--build-arg bpftraceversion=$(BPFTRACEVERSION) \
+		$(IMAGE_BUILD_FLAGS) \
+		-t "$(ETHOS_TRACERUNNER_BRANCH)" \
+		-f build/Dockerfile.ethosrunner  .
+	$(DOCKER) tag $(ETHOS_TRACERUNNER_BRANCH) $(ETHOS_TRACERUNNER_COMMIT)
+	$(DOCKER) tag "$(ETHOS_TRACERUNNER_BRANCH)" $(ETHOS_TRACERUNNER_BRANCH)
+
+
+.PHONY: ethos/push
+ethos/push:
+	$(DOCKER) push $(ETHOS_TRACERUNNER_BRANCH)
+	$(DOCKER) push $(ETHOS_TRACERUNNER_COMMIT)
 
 .PHONY: image/push
 image/push:
