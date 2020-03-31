@@ -171,7 +171,6 @@ func (o *RunOptions) Complete(factory factory.Factory, cmd *cobra.Command, args 
 	if len(o.program) > 0 {
 		if o.cannedCmd {
 			o.program = fmt.Sprintf(`#!/bin/bash -x
-sleep 10000
 %s
 `,o.program)
 		} else {
