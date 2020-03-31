@@ -1,11 +1,13 @@
-FROM alpine:3.8
+FROM alpine:3.11
 RUN apk add --update \
     bash \
     bc \
     build-base \
     curl \
-    libelf-dev \
+    elfutils-dev elfutils-dev \
     linux-headers \
+    bison \
+    flex \
     make
 
 WORKDIR /
