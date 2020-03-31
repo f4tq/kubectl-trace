@@ -30,7 +30,7 @@ kubectl_ethos ?= _output/bin/kubectl-ethos
 trace_runner ?= _output/bin/trace-runner
 
 .PHONY: build
-build: clean ${kubectl_trace}
+build: clean $(kubectl_trace) $(kubectl_ethos) $(trace_runner)
 
 ${kubectl_trace}:
 	CGO_ENABLED=1 $(GO) build ${LDFLAGS} -o $@ ./cmd/kubectl-trace
