@@ -441,7 +441,7 @@ func (t *JobClient) CreateJob(nj Job) (*batchv1.Job, error) {
 			},
 			apiv1.VolumeMount{
 				Name:      "linux-headers-generated",
-				MountPath: "/usr/src/kernels",
+				MountPath: "/usr/src",
 				ReadOnly:  true,
 			})
 
