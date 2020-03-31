@@ -26,6 +26,7 @@ LDFLAGS := -ldflags '-X github.com/iovisor/kubectl-trace/pkg/version.buildTime=$
 TESTPACKAGES := $(shell go list ./... | grep -v github.com/iovisor/kubectl-trace/integration)
 
 kubectl_trace ?= _output/bin/kubectl-trace
+kubectl_ethos ?= _output/bin/kubectl-ethos
 trace_runner ?= _output/bin/trace-runner
 
 .PHONY: build
@@ -33,6 +34,9 @@ build: clean ${kubectl_trace}
 
 ${kubectl_trace}:
 	CGO_ENABLED=1 $(GO) build ${LDFLAGS} -o $@ ./cmd/kubectl-trace
+
+${kubectl_ethos}:
+	CGO_ENABLED=1 $(GO) build ${LDFLAGS} -o $@ ./cmd/kubectl-ethos
 
 ${trace_runner}:
 	CGO_ENABLED=1 $(GO) build ${LDFLAGS} -o $@ ./cmd/trace-runner
