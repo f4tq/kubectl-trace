@@ -10,4 +10,24 @@ const (
 
 	// ObjectNamePrefix is the prefix used for objects created by kubectl-trace
 	ObjectNamePrefix = "kubectl-trace-"
+
+/*
+	EthosPrefix = "kubectl-ethos-"
+	// TraceIDLabelKey is a meta to annotate objects created by this tool
+	EthosIDLabelKey = "adobe.com/kubectl-ethos-id"
+	// TraceLabelKey is a meta to annotate objects created by this tool
+	EthosLabelKey = "adobe.com/kubectl-ethos"
+
+	// ObjectNamePrefix is the prefix used for objects created by kubectl-trace
+	EthosObjectNamePrefix = "kubectl-ethos-"
+*/
+	EthosPrefix = TracePrefix
+	// TraceIDLabelKey is a meta to annotate objects created by this tool
+	EthosIDLabelKey = TraceIDLabelKey
+	// TraceLabelKey is a meta to annotate objects created by this tool
+	EthosLabelKey = TraceLabelKey
+
+	// ObjectNamePrefix is the prefix used for objects created by kubectl-trace
+	EthosObjectNamePrefix = ObjectNamePrefix
+
 )

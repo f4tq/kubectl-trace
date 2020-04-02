@@ -1,15 +1,16 @@
-FROM alpine:3.8
-RUN apk add --update \
-    bash \
-    bc \
-    build-base \
-    curl \
-    libelf-dev \
-    linux-headers \
-    make
+FROM fedora:31
 
 WORKDIR /
 
-COPY /init/fetch-linux-headers.sh /
+# build requirements
+RUN dnf install -y git gcc ncurses-devel elfutils-libelf-devel bc wget \
+bzip2 vim openssl-devel libcap-devel clang llvm graphviz bison flex make \
+glibc-static glibc-devel.i686 iproute-devel binutils-devel diffutils
 
-ENTRYPOINT [ "/fetch-linux-headers.sh" ]
+# needed utilities
+RUN dnf install -y findutils net-tools lsof iproute strace
+
+ADD fetch-linux-headers.sh /
+ADD command.sh /
+CMD /fetch-linux-headers.sh
+ENTRYPOINT [ "/command.sh" ]
