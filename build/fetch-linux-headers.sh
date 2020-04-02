@@ -26,19 +26,36 @@ fetch_cos_linux_sources()
 {
   echo "Fetching upstream kernel sources."
   mkdir -p "${BUILD_DIR}"
-  curl -s "https://storage.googleapis.com/cos-tools/${BUILD_ID}/kernel-src.tar.gz" \
-    | tar -xzf - -C "${BUILD_DIR}"
+  url="https://storage.googleapis.com/cos-tools/${BUILD_ID}/kernel-src.tar.gz"
+  if (curl -vL --head $url ) ; then
+      curl -s "https://storage.googleapis.com/cos-tools/${BUILD_ID}/kernel-src.tar.gz" \
+	  | tar -xzf - -C "${BUILD_DIR}"
+  else
+      2> echo "Missing $url.  Kernel looks funny '${KERNEL_VERSION}'.  Url non-existant: '${url}'"
+      exit 3
+  fi
 }
 
 fetch_generic_linux_sources()
 {
-  kernel_version="$(echo "${KERNEL_VERSION}" | awk -vFS=+ '{ print $1 }')"
-  major_version="$(echo "${KERNEL_VERSION}" | awk -vFS=. '{ print $1 }')"
+  kernel_version=$(echo "${KERNEL_VERSION}" | grep -o '[0-9]\+\.[0-9]\+.[0-9]\+' )
+
+  major_version="$(echo "${kernel_version}" | awk -F. '{ print $1}')"
 
   echo "Fetching upstream kernel sources for ${kernel_version}."
   mkdir -p "${BUILD_DIR}"
-  curl -sL "https://www.kernel.org/pub/linux/kernel/v${major_version}.x/linux-$kernel_version.tar.gz" \
-    | tar --strip-components=1 -xzf - -C "${BUILD_DIR}"
+  url="https://www.kernel.org/pub/linux/kernel/v${major_version}.x/linux-$kernel_version.tar.gz"
+  if (curl -L --head $url ); then
+      curl -sL $url \
+	  | tar --strip-components=1 -xzf - -C "${BUILD_DIR}"
+      if [ ! -d "${BUILD_DIR}" ]; then
+	  2> echo "fetch_generic_linux: Something went wrong exploding $url"
+	  exit 5
+      fi
+  else
+      2> echo "fetch_generic_linux: Missing $url!  Is kernel_version: '${kernel_version}' major_version: '${major_version}' correct?"
+      exit 4
+  fi
 }
 
 install_cos_linux_headers()
