@@ -11,5 +11,6 @@ glibc-static glibc-devel.i686 iproute-devel binutils-devel diffutils
 RUN dnf install -y findutils net-tools lsof iproute strace
 
 ADD fetch-linux-headers.sh /
-
-ENTRYPOINT [ "/fetch-linux-headers.sh" ]
+ADD command.sh /
+CMD /fetch-linux-headers.sh
+ENTRYPOINT [ "/command.sh" ]
