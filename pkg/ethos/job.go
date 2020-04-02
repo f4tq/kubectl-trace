@@ -302,6 +302,7 @@ func (t *JobClient) CreateJob(nj Job) (*batchv1.Job, error) {
 									ReadOnly:  true,
 								},
 							},
+							ImagePullPolicy: "Always",
 							SecurityContext: &apiv1.SecurityContext{
 								Privileged: boolPtr(true),
 							},
